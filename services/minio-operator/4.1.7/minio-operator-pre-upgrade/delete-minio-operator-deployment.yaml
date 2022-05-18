@@ -52,3 +52,4 @@ spec:
             - -c
             - |
               kubectl delete deployments.apps -l app.kubernetes.io/instance=minio-operator,app.kubernetes.io/name=operator -n ${releaseNamespace} --ignore-not-found
+              kubectl delete statefulset grafana-loki-minio-ss-0 -n kommander --ignore-not-found
