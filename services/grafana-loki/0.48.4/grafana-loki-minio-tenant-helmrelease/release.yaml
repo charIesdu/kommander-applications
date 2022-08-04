@@ -1,0 +1,31 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: grafana-loki-minio
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: tenant
+      sourceRef:
+        kind: HelmRepository
+        name: operator.min.io
+        namespace: kommander-flux
+      version: 4.4.25
+  dependsOn:
+    - namespace: ${releaseNamespace}
+      name: minio-operator
+  interval: 15s
+  install:
+    crds: CreateReplace
+    remediation:
+      retries: 30
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 30
+  releaseName: grafana-loki-minio
+  valuesFrom:
+    - kind: ConfigMap
+      name: grafana-loki-0.48.4-d2iq-defaults

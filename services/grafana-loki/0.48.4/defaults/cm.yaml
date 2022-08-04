@@ -158,3 +158,80 @@ data:
           client_max_body_size 10M;
         serverSnippet: |-
           client_max_body_size 10M;
+
+    tenant:
+      image:
+        repository: quay.io/minio/minio
+        tag: RELEASE.2022-01-08T03-11-54Z
+      pools:
+        # We define multiple pools in order to add storage while supporting existing clusters. Server pools can't
+        # be expanded, so cluster storage can only be expanded by adding new pools.
+        # See <https://github.com/minio/operator/blob/7ae1610432ad3174150f4adaab1562c3ee522468/docs/expansion.md#underlying-details-in-tenant-expansion>.
+        - servers: 4
+          volumesPerServer: 1
+          size: 10Gi
+          resources:
+            limits:
+              cpu: 750m
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 768Mi
+          # In DKP 2.1, the minio-operator version (v4.1.3) ran minio as root.
+          # In later operator versions that was changed to always run minio as a non-root user
+          # unfortunately that means to support upgrading from 2.1 -> 2.2 we have to explicitly set the securityContext
+          # to run minio as root so the existing data in minio remains accessible.
+          # https://github.com/minio/operator/blob/master/UPGRADE.md#v423---v424
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+            fsGroup: 0
+        - servers: 4
+          volumesPerServer: 1
+          size: 10Gi
+          resources:
+            limits:
+              cpu: 750m
+              memory: 1Gi
+            requests:
+              cpu: 250m
+              memory: 768Mi
+          # In DKP 2.1, the minio-operator version (v4.1.3) ran minio as root.
+          # In later operator versions that was changed to always run minio as a non-root user
+          # unfortunately that means to support upgrading from 2.1 -> 2.2 we have to explicitly set the securityContext
+          # to run minio as root so the existing data in minio remains accessible.
+          # https://github.com/minio/operator/blob/master/UPGRADE.md#v423---v424
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+            fsGroup: 0
+
+      secrets:
+        name: grafana-loki-minio
+
+      users:
+        - name: grafana-loki-minio-user
+
+      # Disable TLS.
+      certificate:
+        requestAutoCert: false
+
+      # Create services as type ClusterIP, not LoadBalancer.
+      exposeServices:
+        minio: false
+        console: false
+
+      env:
+        # Allow unathenticated requests to metrics endpoint.
+        - name: MINIO_PROMETHEUS_AUTH_TYPE
+          value: public
+
+      features:
+        bucketDNS: false
+
+      buckets:
+        - name: loki
+
+      podManagementPolicy: Parallel
