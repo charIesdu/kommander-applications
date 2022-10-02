@@ -329,6 +329,7 @@ data:
       config:
         global:
           resolve_timeout: 5m
+        inhibit_rules: []
         route:
           group_by: ['job']
           group_wait: 30s
@@ -353,6 +354,9 @@ data:
           - /dkp/alertmanager
         pathType: ImplementationSpecific
       alertmanagerSpec:
+        alertmanagerConfigSelector:
+          matchLabels:
+            alertmanagerConfig: dkp-insights-backend
         logLevel: warn
         resources:
           limits:
