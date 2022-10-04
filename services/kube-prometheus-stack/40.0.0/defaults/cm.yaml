@@ -354,9 +354,6 @@ data:
           - /dkp/alertmanager
         pathType: ImplementationSpecific
       alertmanagerSpec:
-        alertmanagerConfigSelector:
-          matchLabels:
-            alertmanagerConfig: dkp-insights-backend
         logLevel: warn
         resources:
           limits:
