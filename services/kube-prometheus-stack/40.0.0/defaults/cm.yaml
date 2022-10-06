@@ -331,7 +331,7 @@ data:
           resolve_timeout: 5m
         inhibit_rules: []
         route:
-          group_by: ['namespace']
+          group_by: ['severity']
           group_wait: 30s
           group_interval: 5m
           repeat_interval: 12h
@@ -339,7 +339,7 @@ data:
           routes:
           - receiver: 'null'
             matchers:
-              - alertname =~ "InfoInhibitor|Watchdog"
+              - alertname = "Watchdog"
         receivers:
         - name: 'null'
         templates:
