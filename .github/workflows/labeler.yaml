@@ -1,15 +1,12 @@
 name: "Pull Request Labeler"
 on:
   pull_request:
-    branches:
-      - main
-      - 'release/*'
-    paths:
-      - 'services/**/*'
+    types: [opened, reopened]
   workflow_dispatch: {}
 
 jobs:
   label-pr:
+    name: "Label Pull Requests"
     runs-on: ubuntu-latest
     permissions:
       contents: read
